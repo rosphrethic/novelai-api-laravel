@@ -9,8 +9,7 @@ class NovelAI {
 	public string $baseURL;
 	public string $accessKey;
 	public string $accessToken;
-	public array $headers;
-
+ 
 	public function __construct()
 	{
 		$this->baseURL = config("app.novelai_base_url");
