@@ -3,7 +3,6 @@
 namespace App\Classes;
 
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 
 class NovelAI {
 
@@ -14,28 +13,22 @@ class NovelAI {
 
 	public function __construct()
 	{
-		$this->baseURL = env('NOVELAI_BASE_URL');
-		$this->accessKey = env('NOVELAI_ACCESS_KEY');
-		$this->accessToken = session("novelai_access_token") ?? '';
+		$this->baseURL = config("app.novelai_base_url");
+		$this->accessKey = config("app.novelai_access_key");
+		$this->accessToken = session("novelai_access_token") ?? "";
 	}
 
 	public function call($method, $path, $body = null, $urlParameters = [])
 	{
 		$URL = $this->baseURL . $path;
 
-		try {
-			if ($method == "GET") $http = Http::withToken($this->accessToken)->withUrlParameters($urlParameters)->get($URL, $body);
-			if ($method == "POST") $http = Http::withToken($this->accessToken)->withUrlParameters($urlParameters)->post($URL, $body);
-			if ($method == "PUT") $http = Http::withToken($this->accessToken)->withUrlParameters($urlParameters)->put($URL, $body);
-			if ($method == "PATCH") $http = Http::withToken($this->accessToken)->withUrlParameters($urlParameters)->patch($URL, $body);
-			if ($method == "DELETE") $http = Http::withToken($this->accessToken)->withUrlParameters($urlParameters)->delete($URL, $body);
+		if ($method == "GET") $response = Http::withToken($this->accessToken)->withUrlParameters($urlParameters)->get($URL, $body);
+		if ($method == "POST") $response = Http::withToken($this->accessToken)->withUrlParameters($urlParameters)->post($URL, $body);
+		if ($method == "PUT") $response = Http::withToken($this->accessToken)->withUrlParameters($urlParameters)->put($URL, $body);
+		if ($method == "PATCH") $response = Http::withToken($this->accessToken)->withUrlParameters($urlParameters)->patch($URL, $body);
+		if ($method == "DELETE") $response = Http::withToken($this->accessToken)->withUrlParameters($urlParameters)->delete($URL, $body);
 
-			return json_decode($http->getBody());
-
-		} catch (\Exception $exception) {
-			Log::error($exception);
-			abort(500);
-		}
+		return json_decode($response->getBody());
 	}
 
 	public function instance()
